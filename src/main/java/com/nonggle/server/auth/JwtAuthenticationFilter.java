@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Set;
 
+import static com.nonggle.server.auth.AuthException.AuthError; // AuthError import
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -47,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            writeUnauthorized(response, "JWT가 없거나 형식이 올바르지 않습니다.");
+            writeUnauthorized(response, AuthError.UNAUTHORIZED.getMessage()); // 메시지를 AuthError에서 가져옴
             return;
         }
 
@@ -58,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.setAttribute("userId", userId);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            writeUnauthorized(response, "JWT가 유효하지 않거나 만료되었습니다.");
+            writeUnauthorized(response, AuthError.TOKEN_INVALID.getMessage()); // 메시지를 AuthError에서 가져옴
         }
     }
 
@@ -66,6 +68,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), ApiResponse.error(message));
+        objectMapper.writeValue(response.getWriter(), ApiResponse.fail(AuthError.UNAUTHORIZED.getCode(), message)); // ApiResponse.fail 사용
     }
 }

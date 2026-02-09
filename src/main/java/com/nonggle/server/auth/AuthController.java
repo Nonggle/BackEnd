@@ -22,4 +22,13 @@ public class AuthController {
                 authService.kakaoLogin(request.accessToken())
         );
     }
+
+    @PostMapping("/token/refresh")
+    public ApiResponse<LoginResponse> refreshToken(
+            @RequestBody RefreshTokenRequest request
+    ) {
+        return ApiResponse.ok(
+                authService.refreshToken(request.refreshToken())
+        );
+    }
 }
