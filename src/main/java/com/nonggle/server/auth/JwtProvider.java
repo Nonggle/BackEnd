@@ -1,8 +1,12 @@
 package com.nonggle.server.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,12 +38,18 @@ public class JwtProvider {
     }
 
     public Long getUserId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        return Long.parseLong(claims.getSubject());
+            return Long.parseLong(claims.getSubject());
+        } catch (ExpiredJwtException e) {
+            throw new AuthException(AuthException.AuthError.TOKEN_EXPIRED);
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            throw new AuthException(AuthException.AuthError.TOKEN_INVALID);
+        }
     }
 }

@@ -6,13 +6,16 @@ import org.springframework.http.HttpStatus;
 // 인증 관련 예외를 처리하는 커스텀 예외 클래스
 public class AuthException extends ApiException {
 
+    private final AuthError error; // Added field
+
     public enum AuthError {
         UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 401, "인증되지 않았습니다."),
         TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, 401, "AccessToken이 만료되었습니다."),
         TOKEN_INVALID(HttpStatus.UNAUTHORIZED, 401, "AccessToken이 유효하지 않습니다."),
         REFRESH_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, 401, "RefreshToken이 필요합니다."),
         REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, 401, "RefreshToken이 만료되었습니다."),
-        REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, 401, "RefreshToken이 유효하지 않습니다.");
+        REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, 401, "RefreshToken이 유효하지 않습니다."),
+        FORBIDDEN(HttpStatus.FORBIDDEN, 403, "접근 권한이 없습니다.");
 
         private final HttpStatus httpStatus;
         private final int code;
@@ -39,9 +42,16 @@ public class AuthException extends ApiException {
 
     public AuthException(AuthError error) {
         super(error.getHttpStatus(), error.getCode(), error.getMessage());
+        this.error = error; // Initialize field
     }
 
     public AuthException(AuthError error, String debugMessage) {
         super(error.getHttpStatus(), error.getCode(), error.getMessage(), debugMessage);
+        this.error = error; // Initialize field
+    }
+
+    // Added getter
+    public AuthError getAuthError() {
+        return error;
     }
 }

@@ -7,23 +7,31 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
-import static com.nonggle.server.auth.AuthException.AuthError; // AuthError import
-
+//HTTP 요청의 토큰 인증 처리
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Set<String> WHITELIST_PREFIX = Set.of(
-            "/auth", "/hello", "/h2-console"
-    );
-
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    // PermitAll로 설정된 경로들
+    private final List<String> publicPaths = Arrays.asList(
+            "/auth/kakao",
+            "/auth/token/refresh",
+            "/hello",
+            "/health",
+            "/h2-console/**"
+    );
 
     public JwtAuthenticationFilter(JwtProvider jwtProvider, ObjectMapper objectMapper) {
         this.jwtProvider = jwtProvider;
@@ -31,12 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        // 프리플라이트(필요 시)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
-
-        return WHITELIST_PREFIX.stream().anyMatch(path::startsWith);
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // public path의 경우 필터를 거치지 않음
+        return publicPaths.stream()
+                .anyMatch(p -> pathMatcher.match(p, request.getRequestURI()));
     }
 
     @Override
@@ -45,29 +51,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            writeUnauthorized(response, AuthError.UNAUTHORIZED.getMessage()); // 메시지를 AuthError에서 가져옴
-            return;
-        }
-
-        String token = authHeader.substring(7);
-
         try {
-            Long userId = jwtProvider.getUserId(token);
-            request.setAttribute("userId", userId);
+            String authHeader = request.getHeader("Authorization");
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new AuthException(AuthException.AuthError.UNAUTHORIZED);
+            }
+
+            String token = authHeader.substring(7);
+            Long userId = jwtProvider.getUserId(token); // AuthException will be thrown here for expired/invalid tokens
+
+            // Set authentication in SecurityContext
+            JwtAuthenticationToken authentication = new JwtAuthenticationToken(userId);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            writeUnauthorized(response, AuthError.TOKEN_INVALID.getMessage()); // 메시지를 AuthError에서 가져옴
+        } catch (AuthException e) {
+            writeErrorResponse(response, e.getAuthError());
         }
     }
 
-    private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    private void writeErrorResponse(HttpServletResponse response, AuthException.AuthError error) throws IOException {
+        response.setStatus(error.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), ApiResponse.fail(AuthError.UNAUTHORIZED.getCode(), message)); // ApiResponse.fail 사용
+        objectMapper.writeValue(response.getWriter(), ApiResponse.fail(error.getCode(), error.getMessage()));
     }
 }

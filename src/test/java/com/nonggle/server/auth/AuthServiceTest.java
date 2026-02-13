@@ -43,14 +43,19 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        // userRepository.save()의 thenAnswer 설정을 BeforeEach로 이동하여 중복 제거 및 일관성 유지
-        when(userRepository.save(any(User.class)))
+        // userRepository.save()의 thenAnswer 설정: ID가 없는 경우 할당하고, 항상 인수를 반환
+        lenient().when(userRepository.save(any(User.class)))
             .thenAnswer(invocation -> {
                 User userToSave = invocation.getArgument(0);
-                if (userToSave.getId() == null) { // ID가 없는 경우 (첫 번째 저장)
-                    userToSave.setId(1L); // 테스트용 ID 할당
+                if (userToSave.getId() == null) {
+                    // Create a new User instance with an ID, mimicking a saved entity
+                    User savedUser = new User(userToSave.getKakaoId());
+                    savedUser.setId(1L); // Assign a test ID
+                    // Copy other fields if necessary, like refreshToken and expiryDate
+                    savedUser.updateRefreshToken(userToSave.getRefreshToken(), userToSave.getRefreshTokenExpiryDate());
+                    return savedUser;
                 }
-                return userToSave; // 변경된 User 객체를 그대로 반환
+                return userToSave; // For existing users, return the same instance
             });
     }
 
@@ -62,7 +67,7 @@ class AuthServiceTest {
         when(kakaoClient.getUserInfo(TEST_KAKAO_ACCESS_TOKEN))
                 .thenReturn(new KakaoUser(TEST_KAKAO_USER_ID));
         // Mock JwtProvider to return a test JWT token for this specific test
-        when(jwtProvider.createToken(any(Long.class)))
+        lenient().when(jwtProvider.createToken(any(Long.class)))
                 .thenReturn(TEST_JWT_TOKEN);
 
         User existingUser = new User(TEST_KAKAO_USER_ID);
@@ -101,7 +106,7 @@ class AuthServiceTest {
         when(kakaoClient.getUserInfo(TEST_KAKAO_ACCESS_TOKEN))
                 .thenReturn(new KakaoUser(TEST_KAKAO_USER_ID));
         // Mock JwtProvider to return a test JWT token for this specific test
-        when(jwtProvider.createToken(any(Long.class)))
+        lenient().when(jwtProvider.createToken(any(Long.class)))
                 .thenReturn(TEST_JWT_TOKEN);
 
         when(userRepository.findByKakaoId(TEST_KAKAO_USER_ID))

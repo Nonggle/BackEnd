@@ -11,6 +11,7 @@ import java.time.Clock;
 import java.util.UUID;
 
 import static com.nonggle.server.auth.AuthException.AuthError; // AuthError import
+// 인증 비즈니스 로직
 
 @Service
 public class AuthService {
