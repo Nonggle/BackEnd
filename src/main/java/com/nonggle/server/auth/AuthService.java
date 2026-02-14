@@ -9,8 +9,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.Clock;
 import java.util.UUID;
-
-import static com.nonggle.server.auth.AuthException.AuthError; // AuthError import
+import com.nonggle.server.auth.AuthException.AuthError; // AuthError import
 // 인증 비즈니스 로직
 
 @Service

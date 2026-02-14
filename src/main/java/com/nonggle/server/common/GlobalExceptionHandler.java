@@ -1,14 +1,37 @@
 package com.nonggle.server.common;
 
+import com.nonggle.server.auth.AuthException;
+import com.nonggle.server.auth.KakaoClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j // Slf4j 어노테이션 추가
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(KakaoClient.KakaoAuthException.class)
+    public ResponseEntity<ApiResponse<?>> handleKakaoAuthException(KakaoClient.KakaoAuthException e) {
+        log.error("KakaoAuthException: Error - {}, Message - {}", e.getError(), e.getMessage(), e);
+
+        AuthException.AuthError error = switch (e.getError()) {
+            case UNAUTHORIZED, FORBIDDEN -> AuthException.AuthError.TOKEN_INVALID; // 401, "잘못된 카카오 토큰"
+            default -> null;
+        };
+
+        if (error != null) {
+            return ResponseEntity
+                    .status(error.getHttpStatus())
+                    .body(ApiResponse.fail(error.getCode(), "카카오 인증에 실패했습니다. 토큰을 확인해주세요."));
+        }
+
+        // 기본 처리 (500)
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.fail(500, "카카오 연동 중 서버 오류가 발생했습니다."));
+    }
     // ApiException 및 하위 클래스 처리
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<?>> handleApiException(ApiException e) {
