@@ -58,5 +58,5 @@ tasks.withType<Test> {
 }
 
 tasks.bootJar {
-    archiveFileName = "${project.name}.jar"
+	archiveFileName = "app.jar"
 }
