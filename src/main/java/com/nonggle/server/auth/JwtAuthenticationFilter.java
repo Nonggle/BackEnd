@@ -2,6 +2,8 @@ package com.nonggle.server.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nonggle.server.common.ApiResponse;
+import com.nonggle.server.common.ApiException;
+import com.nonggle.server.common.ErrorDefine;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,23 +57,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authHeader = request.getHeader("Authorization");
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new AuthException(AuthException.AuthError.UNAUTHORIZED);
+                throw new ApiException(ErrorDefine.UNAUTHORIZED);
             }
 
             String token = authHeader.substring(7);
-            Long userId = jwtProvider.getUserId(token); // AuthException will be thrown here for expired/invalid tokens
+            Long userId = jwtProvider.getUserId(token); // ApiException will be thrown here for expired/invalid tokens
 
             // Set authentication in SecurityContext
             JwtAuthenticationToken authentication = new JwtAuthenticationToken(userId);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        } catch (AuthException e) {
-            writeErrorResponse(response, e.getAuthError());
+        } catch (ApiException e) {
+            writeErrorResponse(response, e.getError());
         }
     }
 
-    private void writeErrorResponse(HttpServletResponse response, AuthException.AuthError error) throws IOException {
+    private void writeErrorResponse(HttpServletResponse response, ErrorDefine error) throws IOException {
         response.setStatus(error.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");

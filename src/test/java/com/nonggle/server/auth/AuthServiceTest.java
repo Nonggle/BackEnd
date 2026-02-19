@@ -13,7 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant; // Instant import
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit; // ChronoUnit import
 import java.util.Optional;
 
@@ -34,12 +36,17 @@ class AuthServiceTest {
     @Mock
     private JwtProvider jwtProvider;
 
+    @Mock
+    private Clock clock;
+
     @InjectMocks
     private AuthService authService;
 
     private static final String TEST_KAKAO_ACCESS_TOKEN = "test_kakao_access_token";
     private static final String TEST_KAKAO_USER_ID = "12345";
     private static final String TEST_JWT_TOKEN = "test.jwt.token";
+    private static final Instant FIXED_NOW = Instant.parse("2023-01-01T10:00:00Z");
+
 
     @BeforeEach
     void setUp() {
@@ -57,6 +64,10 @@ class AuthServiceTest {
                 }
                 return userToSave; // For existing users, return the same instance
             });
+
+        // Mock Clock
+        lenient().when(clock.instant()).thenReturn(FIXED_NOW);
+        lenient().when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
     }
 
     @Test
@@ -94,8 +105,7 @@ class AuthServiceTest {
 
         assertThat(savedUser.getRefreshToken()).isEqualTo(response.refreshToken());
         assertThat(savedUser.getRefreshTokenExpiryDate()).isNotNull();
-        assertThat(savedUser.getRefreshTokenExpiryDate()).isAfter(Instant.now()); // 만료일이 현재 시각보다 미래인지 확인
-        assertThat(savedUser.getRefreshTokenExpiryDate().minus(2, ChronoUnit.WEEKS)).isBetween(Instant.now().minusSeconds(5), Instant.now().plusSeconds(5)); // 대략 2주 후인지 확인
+        assertThat(savedUser.getRefreshTokenExpiryDate()).isEqualTo(FIXED_NOW.plus(14, ChronoUnit.DAYS));
     }
 
     @Test
@@ -129,8 +139,7 @@ class AuthServiceTest {
 
         assertThat(savedUserAfterSecondSave.getRefreshToken()).isEqualTo(response.refreshToken());
         assertThat(savedUserAfterSecondSave.getRefreshTokenExpiryDate()).isNotNull();
-        assertThat(savedUserAfterSecondSave.getRefreshTokenExpiryDate()).isAfter(Instant.now()); // 만료일이 현재 시각보다 미래인지 확인
-        assertThat(savedUserAfterSecondSave.getRefreshTokenExpiryDate().minus(2, ChronoUnit.WEEKS)).isBetween(Instant.now().minusSeconds(5), Instant.now().plusSeconds(5)); // 대략 2주 후인지 확인
+        assertThat(savedUserAfterSecondSave.getRefreshTokenExpiryDate()).isEqualTo(FIXED_NOW.plus(14, ChronoUnit.DAYS));
     }
 
     @Test

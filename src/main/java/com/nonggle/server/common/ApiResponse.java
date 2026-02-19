@@ -7,7 +7,7 @@ public record ApiResponse<T>(
 ) {
     public record Error(int code, String message) {} // Error 내부 레코드 정의
 
-    public static <T> ApiResponse<T> ok(T data) {
+    public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, data, null); // error는 null로 설정
     }
 

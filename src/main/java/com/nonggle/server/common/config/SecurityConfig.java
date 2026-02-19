@@ -1,9 +1,10 @@
 package com.nonggle.server.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nonggle.server.auth.AuthException;
+
 import com.nonggle.server.auth.JwtAuthenticationFilter;
 import com.nonggle.server.common.ApiResponse;
+import com.nonggle.server.common.ErrorDefine;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -45,15 +46,15 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JwtAuthenticationFilter 추가
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> { // 인증 실패 (401)
-                            AuthException.AuthError error = AuthException.AuthError.UNAUTHORIZED;
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            ErrorDefine error = ErrorDefine.UNAUTHORIZED;
+                            response.setStatus(error.getHttpStatus().value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
                             objectMapper.writeValue(response.getWriter(), ApiResponse.fail(error.getCode(), error.getMessage()));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> { // 인가 실패 (403)
-                            AuthException.AuthError error = AuthException.AuthError.FORBIDDEN; // assuming FORBIDDEN is defined in AuthError
-                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            ErrorDefine error = ErrorDefine.FORBIDDEN;
+                            response.setStatus(error.getHttpStatus().value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
                             objectMapper.writeValue(response.getWriter(), ApiResponse.fail(error.getCode(), error.getMessage()));

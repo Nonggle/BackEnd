@@ -3,13 +3,15 @@ package com.nonggle.server.auth;
 import com.nonggle.server.auth.KakaoClient.KakaoUser;
 import com.nonggle.server.user.User;
 import com.nonggle.server.user.UserRepository;
+import com.nonggle.server.common.ApiException;
+import com.nonggle.server.common.ErrorDefine;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.Clock;
 import java.util.UUID;
-import com.nonggle.server.auth.AuthException.AuthError; // AuthError import
+
 // 인증 비즈니스 로직
 
 @Service
@@ -64,14 +66,14 @@ public class AuthService {
     public LoginResponse refreshToken(String refreshToken) {
         // 1️⃣ RefreshToken 유효성 검사
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new AuthException(AuthError.REFRESH_TOKEN_MISSING);
+            throw new ApiException(ErrorDefine.REFRESH_TOKEN_MISSING);
         }
 
         User user = userRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new AuthException(AuthError.REFRESH_TOKEN_INVALID));
+                .orElseThrow(() -> new ApiException(ErrorDefine.REFRESH_TOKEN_INVALID));
 
         if (user.getRefreshTokenExpiryDate() == null || Instant.now(clock).isAfter(user.getRefreshTokenExpiryDate())) {
-            throw new AuthException(AuthError.REFRESH_TOKEN_EXPIRED);
+            throw new ApiException(ErrorDefine.REFRESH_TOKEN_EXPIRED);
         }
 
         // 2️⃣ 새로운 AccessToken 및 RefreshToken 발급 (RefreshToken Rotation)

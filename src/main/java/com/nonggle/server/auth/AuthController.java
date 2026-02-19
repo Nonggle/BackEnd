@@ -18,7 +18,7 @@ public class AuthController {
     public ApiResponse<LoginResponse> kakaoLogin( // 카카오로그인 실동작 부분
             @RequestBody KakaoLoginRequest request
     ) {
-        return ApiResponse.ok(
+        return ApiResponse.success(
                 authService.kakaoLogin(request.accessToken())
         );
     }
@@ -27,7 +27,7 @@ public class AuthController {
     public ApiResponse<LoginResponse> refreshToken(
             @RequestBody RefreshTokenRequest request
     ) {
-        return ApiResponse.ok(
+        return ApiResponse.success(
                 authService.refreshToken(request.refreshToken())
         );
     }
