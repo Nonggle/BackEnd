@@ -48,17 +48,16 @@ public class AuthService {
                         )
                 );
 
-        String newRefreshToken = UUID.randomUUID().toString();
+        String newJwtAccessToken = jwtProvider.createAccessToken(user.getId());
+        String newRefreshToken = jwtProvider.createRefreshToken(user.getId());
         Instant newRefreshTokenExpiryDate = Instant.now(clock).plus(14, ChronoUnit.DAYS); // 2주 후 만료 시각 설정
         user.updateRefreshToken(newRefreshToken, newRefreshTokenExpiryDate);
         userRepository.save(user);
 
-        String jwt = jwtProvider.createToken(user.getId());
-
         // 3️⃣ 응답 반환
         return new LoginResponse(
                 user.getId(),
-                jwt,
+                newJwtAccessToken,
                 newRefreshToken
         );
     }
@@ -77,8 +76,8 @@ public class AuthService {
         }
 
         // 2️⃣ 새로운 AccessToken 및 RefreshToken 발급 (RefreshToken Rotation)
-        String newAccessToken = jwtProvider.createToken(user.getId());
-        String newRefreshToken = UUID.randomUUID().toString();
+        String newAccessToken = jwtProvider.createAccessToken(user.getId());
+        String newRefreshToken = jwtProvider.createRefreshToken(user.getId());
         Instant newRefreshTokenExpiryDate = Instant.now(clock).plus(14, ChronoUnit.DAYS);
 
         user.updateRefreshToken(newRefreshToken, newRefreshTokenExpiryDate);

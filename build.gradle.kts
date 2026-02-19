@@ -27,10 +27,10 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-	// ✅ Kakao API 호출용 HTTP Client
+	// Kakao API 호출용 HTTP Client
 	implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-	// ✅ JSON 파싱용 (이미 있을 수도 있음)
+	// JSON 파싱용 (이미 있을 수도 있음)
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 
 	// JWT
@@ -48,6 +48,9 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	// Postgres 드라이버 추가
+	implementation("org.postgresql:postgresql:42.7.10")
 }
 
 tasks.withType<Test> {

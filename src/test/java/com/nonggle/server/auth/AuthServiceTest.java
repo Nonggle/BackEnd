@@ -78,8 +78,10 @@ class AuthServiceTest {
         when(kakaoClient.getUserInfo(TEST_KAKAO_ACCESS_TOKEN))
                 .thenReturn(new KakaoUser(TEST_KAKAO_USER_ID));
         // Mock JwtProvider to return a test JWT token for this specific test
-        lenient().when(jwtProvider.createToken(any(Long.class)))
+        lenient().when(jwtProvider.createAccessToken(any(Long.class)))
                 .thenReturn(TEST_JWT_TOKEN);
+        lenient().when(jwtProvider.createRefreshToken(any(Long.class)))
+                .thenReturn("new.refresh.token");
 
         User existingUser = new User(TEST_KAKAO_USER_ID);
         existingUser.updateRefreshToken("old_refresh_token", Instant.now().plus(1, ChronoUnit.DAYS)); // 기존 리프레시 토큰 설정
@@ -116,8 +118,10 @@ class AuthServiceTest {
         when(kakaoClient.getUserInfo(TEST_KAKAO_ACCESS_TOKEN))
                 .thenReturn(new KakaoUser(TEST_KAKAO_USER_ID));
         // Mock JwtProvider to return a test JWT token for this specific test
-        lenient().when(jwtProvider.createToken(any(Long.class)))
+        lenient().when(jwtProvider.createAccessToken(any(Long.class)))
                 .thenReturn(TEST_JWT_TOKEN);
+        lenient().when(jwtProvider.createRefreshToken(any(Long.class)))
+                .thenReturn("new.refresh.token");
 
         when(userRepository.findByKakaoId(TEST_KAKAO_USER_ID))
                 .thenReturn(Optional.empty());
@@ -157,7 +161,8 @@ class AuthServiceTest {
         assertThat(exception.getMessage()).contains("카카오 사용자 정보 조회 실패");
         verify(userRepository, never()).findByKakaoId(anyString()); // 카카오 클라이언트 실패 시 DB 조회 안됨
         verify(userRepository, never()).save(any(User.class));
-        verify(jwtProvider, never()).createToken(any(Long.class));
+        verify(jwtProvider, never()).createAccessToken(any(Long.class));
+        verify(jwtProvider, never()).createRefreshToken(any(Long.class));
     }
 
     @Test

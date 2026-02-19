@@ -20,22 +20,34 @@ import java.util.Date;
 public class JwtProvider {
 
     private final Key key;
-    private final long expiration;
+    private final long accessTokenExpiration;
+    private final long refreshTokenExpiration;
 
     public JwtProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiration}") long expiration
+            @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration
     ) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expiration = expiration;
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String createToken(Long userId) {
+    public String createAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(key) // 0.11.x OK
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(key)
+                .compact();
+    }
+
+    public String createRefreshToken(Long userId) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(key)
                 .compact();
     }
 
