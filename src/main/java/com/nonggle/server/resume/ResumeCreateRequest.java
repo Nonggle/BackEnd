@@ -2,7 +2,6 @@ package com.nonggle.server.resume;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

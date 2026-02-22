@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.Clock;
-import java.util.UUID;
 
 // 인증 비즈니스 로직
 
