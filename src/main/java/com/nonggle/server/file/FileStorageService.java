@@ -17,9 +17,14 @@ import java.util.UUID;
 public class FileStorageService {
 
     private final Path fileStorageLocation;
-    private final String baseUrl = "http://localhost:8080/uploads/"; // TODO: 실제 배포 시에는 CDN 주소 등으로 변경 필요
+    private final String baseUrl;
+    //private final String baseUrl = "http://localhost:8080/uploads/"; // TODO: 실제 배포 시에는 CDN 주소 등으로 변경 필요
 
-    public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
+    public FileStorageService(
+            @Value("${app.base-url}") String baseUrl,
+            @Value("${file.upload-dir}") String uploadDir
+    ) {
+        this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length()-1) : baseUrl;
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);

@@ -26,6 +26,14 @@ public class ResumeController {
             @RequestPart("data") @Valid ResumeCreateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile profileImage) {
 
+        if (profileImage != null) {
+            System.out.println("DEBUG: File received - Name: " + profileImage.getName());
+            System.out.println("DEBUG: File received - OriginalName: " + profileImage.getOriginalFilename());
+            System.out.println("DEBUG: File received - Size: " + profileImage.getSize());
+        } else {
+            System.out.println("DEBUG: No file received (profileImage is null)");
+        }
+
         Long resumeId = resumeService.createResume(userId, request, profileImage);
         return ApiResponse.success(new ResumeIdResponse(resumeId));
     }
