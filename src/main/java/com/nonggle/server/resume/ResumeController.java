@@ -22,30 +22,27 @@ public class ResumeController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ResumeIdResponse> createResume(
-            @AuthenticationPrincipal JwtAuthenticationToken authentication,
+            @AuthenticationPrincipal Long userId,
             @RequestPart("data") @Valid ResumeCreateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile profileImage) {
 
-        Long userId = (Long) authentication.getPrincipal();
         Long resumeId = resumeService.createResume(userId, request, profileImage);
         return ApiResponse.success(new ResumeIdResponse(resumeId));
     }
 
     @GetMapping
     public ApiResponse<List<ResumeResponse>> getMyResumes(
-            @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+            @AuthenticationPrincipal Long userId) {
 
-        Long userId = (Long) authentication.getPrincipal();
         List<ResumeResponse> resumes = resumeService.findMyResumes(userId);
         return ApiResponse.success(resumes);
     }
 
     @GetMapping("/{id}")
     public ApiResponse<ResumeResponse> getMyResume(
-            @AuthenticationPrincipal JwtAuthenticationToken authentication,
+            @AuthenticationPrincipal Long userId,
             @PathVariable("id") Long resumeId) {
 
-        Long userId = (Long) authentication.getPrincipal();
         ResumeResponse resume = resumeService.findMyResume(userId, resumeId);
         return ApiResponse.success(resume);
     }
