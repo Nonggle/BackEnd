@@ -50,6 +50,7 @@ public class SecurityConfig {
                             response.setStatus(error.getHttpStatus().value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding("UTF-8");
+                            response.setHeader("WWW-Authenticate", "Bearer realm=\"nonggle\"");
                             objectMapper.writeValue(response.getWriter(), ApiResponse.fail(error.getCode(), error.getMessage()));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> { // 인가 실패 (403)

@@ -77,6 +77,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(error.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
+
+        // WWW-Authenticate 헤더 추가 (Ktor 대응)
+        if (error.getHttpStatus() == org.springframework.http.HttpStatus.UNAUTHORIZED) {
+            response.setHeader("WWW-Authenticate", "Bearer realm=\"nonggle\", error=\"" + error.name() + "\"");
+        }
+
         objectMapper.writeValue(response.getWriter(), ApiResponse.fail(error.getCode(), error.getMessage()));
     }
 }
