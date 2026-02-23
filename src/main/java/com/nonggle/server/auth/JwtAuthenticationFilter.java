@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/auth/token/refresh",
             "/hello",
             "/health",
-            "/h2-console/**"
+            "/h2-console/**",
+            "/uploads/**"
     );
 
     public JwtAuthenticationFilter(JwtProvider jwtProvider, ObjectMapper objectMapper) {
