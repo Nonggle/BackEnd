@@ -8,18 +8,18 @@ public record ResumeResponse(
         Long id,
         Long userId, // 소유자 ID 추가
         String userName,
-        String birthDate,
-        String introduction,
-        String gender,
+        @Nullable String birthDate,
+        @Nullable String introduction,
+        @Nullable String gender,
         @Nullable List<String> certificationList,
-        List<CareerResponseData> careerList,
+        @Nullable List<CareerResponseData> careerList,
         String totalCareer,
-        String introduce,
-        String introduceDetail,
-        List<String> personalityList,
-        String profileImageUrl,
-        String createdAt,
-        String updatedAt
+        @Nullable String introduce,
+        @Nullable String introduceDetail,
+        @Nullable List<String> personalityList,
+        @Nullable String profileImageUrl,
+        @Nullable String createdAt,
+        @Nullable String updatedAt
 ) {
     public static ResumeResponse from(Resume resume) {
         return new ResumeResponse(

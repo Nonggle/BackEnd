@@ -39,7 +39,8 @@ public class SecurityConfig {
                                 "/auth/token/refresh",
                                 "/hello",
                                 "/health",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/uploads/**"
                         ).permitAll() // 특정 경로는 인증 없이 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )

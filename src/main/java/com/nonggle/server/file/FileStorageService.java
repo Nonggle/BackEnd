@@ -18,7 +18,6 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
     private final String baseUrl;
-    //private final String baseUrl = "http://localhost:8080/uploads/"; // TODO: 실제 배포 시에는 CDN 주소 등으로 변경 필요
 
     public FileStorageService(
             @Value("${app.base-url}") String baseUrl,
@@ -47,7 +46,7 @@ public class FileStorageService {
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation);
 
-            return baseUrl + fileName;
+            return baseUrl + "/uploads/" + fileName;
         } catch (IOException ex) {
             throw new ApiException(ErrorDefine.INTERNAL_ERROR, "파일을 저장할 수 없습니다. " + originalFileName);
         }
