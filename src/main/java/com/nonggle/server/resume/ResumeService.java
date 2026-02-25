@@ -34,8 +34,8 @@ public class ResumeService {
         Resume resume = Resume.builder()
                 .user(user)
                 .userName(request.userName())
+                .userAge(request.userAge())
                 .birthDate(request.birthDate())
-                .introduction(request.introduction())
                 .gender(request.gender())
                 .certificationTitles(request.certificationList() != null ?
                         request.certificationList().stream()
@@ -46,6 +46,7 @@ public class ResumeService {
                                 .map(careerData -> new Resume.CareerData(
                                         careerData.careerStartDate(),
                                         careerData.careerEndDate(),
+                                        careerData.careerPeriod(),
                                         careerData.careerDescription(),
                                         careerData.careerDetail()
                                 ))

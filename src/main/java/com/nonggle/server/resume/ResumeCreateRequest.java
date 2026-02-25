@@ -12,10 +12,8 @@ import java.util.List;
  */
 public record ResumeCreateRequest(
         @NotBlank String userName,
-
+        String userAge,
         String birthDate,
-
-        String introduction,
         String gender,
 
         @Nullable List<CertificationTag> certificationList,
@@ -39,9 +37,8 @@ public record ResumeCreateRequest(
 
     public record CareerFormData(
             String careerStartDate,
-
             String careerEndDate,
-
+            String careerPeriod,
             String careerDescription,
             String careerDetail
     ) {}

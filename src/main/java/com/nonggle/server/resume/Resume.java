@@ -25,10 +25,9 @@ public class Resume {
 
     private String userName; // ResumeCreateRequest의 userName
 
-    private String birthDate; // ResumeCreateRequest의 birthDate
+    private String userAge; // ResumeCreateRequest의 userAge
 
-    @Column(length = 1000)
-    private String introduction; // ResumeCreateRequest의 introduction
+    private String birthDate; // ResumeCreateRequest의 birthDate
 
     private String gender; // ResumeCreateRequest의 gender
 
@@ -77,6 +76,7 @@ public class Resume {
     public static class CareerData {
         private String careerStartDate;
         private String careerEndDate;
+        private String careerPeriod;
         @Column(length = 500)
         private String careerDescription;
         @Column(length = 1000)
