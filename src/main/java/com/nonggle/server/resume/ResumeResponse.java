@@ -9,8 +9,8 @@ public record ResumeResponse(
         Long userId, // 소유자 ID 추가
         String userName,
         @Nullable String birthDate,
-        @Nullable String introduction,
-        @Nullable String gender,
+        String userAge,
+        String userGender,
         @Nullable List<String> certificationList,
         @Nullable List<CareerResponseData> careerList,
         String totalCareer,
@@ -27,7 +27,7 @@ public record ResumeResponse(
                 resume.getUser().getId(),
                 resume.getUserName(),
                 resume.getBirthDate(),
-                resume.getIntroduction(),
+                resume.getUserAge(),
                 resume.getGender(),
                 resume.getCertificationTitles(),
                 resume.getCareerList().stream()
@@ -46,6 +46,7 @@ public record ResumeResponse(
     public record CareerResponseData(
             String careerStartDate,
             String careerEndDate,
+            String careerPeriod,
             String careerDescription,
             String careerDetail
     ) {
@@ -53,6 +54,7 @@ public record ResumeResponse(
             return new CareerResponseData(
                     careerData.getCareerStartDate(),
                     careerData.getCareerEndDate(),
+                    careerData.getCareerPeriod(),
                     careerData.getCareerDescription(),
                     careerData.getCareerDetail()
             );
