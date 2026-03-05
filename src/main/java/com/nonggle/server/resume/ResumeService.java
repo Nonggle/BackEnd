@@ -84,4 +84,16 @@ public class ResumeService {
         }
         return ResumeResponse.from(resume);
     }
+
+    @Transactional
+    public void deleteResume(Long userId, Long resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.RESUME_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(userId)) {
+            throw new ApiException(ErrorDefine.FORBIDDEN);
+        }
+
+        resumeRepository.delete(resume);
+    }
 }

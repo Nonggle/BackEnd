@@ -54,4 +54,13 @@ public class ResumeController {
         ResumeResponse resume = resumeService.findMyResume(userId, resumeId);
         return ApiResponse.success(resume);
     }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteResume(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable("id") Long resumeId) {
+
+        resumeService.deleteResume(userId, resumeId);
+        return ApiResponse.success(null);
+    }
 }
