@@ -1,6 +1,7 @@
 package com.nonggle.server.auth;
 
 import com.nonggle.server.common.ApiResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 //인증 관련 API 컨트롤러
 @RestController
@@ -30,5 +31,13 @@ public class AuthController {
         return ApiResponse.success(
                 authService.refreshToken(request.refreshToken())
         );
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(
+            @AuthenticationPrincipal Long userId
+    ) {
+        authService.logout(userId);
+        return ApiResponse.success(null);
     }
 }

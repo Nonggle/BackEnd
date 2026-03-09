@@ -89,4 +89,11 @@ public class AuthService {
                 newRefreshToken
         );
     }
+
+    public void logout(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.UNAUTHORIZED));
+        user.invalidateRefreshToken();
+        userRepository.save(user);
+    }
 }

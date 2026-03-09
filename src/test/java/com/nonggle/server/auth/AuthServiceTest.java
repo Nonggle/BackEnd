@@ -181,4 +181,24 @@ class AuthServiceTest {
         assertThat(exception.getMessage()).contains("AccessToken이 만료되었습니다.");
         verify(userRepository, never()).findByKakaoId(anyString());
     }
+
+    @Test
+    @DisplayName("로그아웃 성공 - 리프레시 토큰 무효화")
+    void logout_success() {
+        // Given
+        Long userId = 1L;
+        User user = new User("kakao_123");
+        user.setId(userId);
+        user.updateRefreshToken("refresh_token", Instant.now().plus(14, ChronoUnit.DAYS));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // When
+        authService.logout(userId);
+
+        // Then
+        assertThat(user.getRefreshToken()).isNull();
+        assertThat(user.getRefreshTokenExpiryDate()).isNull();
+        verify(userRepository, times(1)).save(user);
+    }
 }

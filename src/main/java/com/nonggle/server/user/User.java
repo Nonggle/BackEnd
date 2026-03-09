@@ -29,6 +29,11 @@ public class User {
         this.refreshTokenExpiryDate = expiryDate;
     }
 
+    public void invalidateRefreshToken() {
+        this.refreshToken = null;
+        this.refreshTokenExpiryDate = null;
+    }
+
     public Long getId() {
         return id;
     }
