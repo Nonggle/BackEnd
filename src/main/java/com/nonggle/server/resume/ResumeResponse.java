@@ -2,6 +2,7 @@ package com.nonggle.server.resume;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.lang.Nullable;
 
 public record ResumeResponse(

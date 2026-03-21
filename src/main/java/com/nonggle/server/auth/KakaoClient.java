@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 import okhttp3.*;
+
 import java.io.IOException;
 
 @Component
@@ -84,7 +85,8 @@ public class KakaoClient {
         return s.length() > 500 ? s.substring(0, 500) + "..." : s;
     }
 
-    public record KakaoUser(String kakaoId) {}
+    public record KakaoUser(String kakaoId) {
+    }
 
     public enum KakaoAuthError {
         INVALID_INPUT,

@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
                 .status(error.getHttpStatus())
                 .body(ApiResponse.fail(error.getCode(), "카카오 인증에 실패했습니다. 토큰을 확인해주세요."));
     }
+
     // 비즈니스 로직 관련 예외 처리
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<?>> handleApiException(ApiException e) {

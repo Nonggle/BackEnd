@@ -3,6 +3,7 @@ package com.nonggle.server.auth;
 import com.nonggle.server.common.ApiResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 //인증 관련 API 컨트롤러
 @RestController
 @RequestMapping("/auth")
@@ -17,7 +18,7 @@ public class AuthController {
 
     @PostMapping("/kakao")
     public ApiResponse<LoginResponse> kakaoLogin( // 카카오로그인 실동작 부분
-            @RequestBody KakaoLoginRequest request
+                                                  @RequestBody KakaoLoginRequest request
     ) {
         return ApiResponse.success(
                 authService.kakaoLogin(request.accessToken())

@@ -1,11 +1,13 @@
 package com.nonggle.server.common;
+
 // 공통 응답 클래스
 public record ApiResponse<T>(
         boolean success,
         T data,
         ApiResponse.Error error // error 객체로 변경
 ) {
-    public record Error(int code, String message) {} // Error 내부 레코드 정의
+    public record Error(int code, String message) {
+    } // Error 내부 레코드 정의
 
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, data, null); // error는 null로 설정
