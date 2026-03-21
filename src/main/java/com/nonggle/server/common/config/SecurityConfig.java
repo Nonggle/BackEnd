@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JwtAuthenticationFilter 추가
+                .logout(logout -> logout.disable()) // 기본 로그아웃 필터 비활성화 (AuthController 로직 사용)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> { // 인증 실패 (401)
                             ErrorDefine error = ErrorDefine.UNAUTHORIZED;
