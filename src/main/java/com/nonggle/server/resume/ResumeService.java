@@ -33,14 +33,16 @@ public class ResumeService {
             profileImageUrl = fileStorageService.storeFile(profileImage);
         }
 
-        // null-safe mapping for lists
-        List<String> certificationTitles = request.certificationList() == null ? new java.util.ArrayList<>() :
+        // null-safe mapping for lists (ensure they are NEVER null when saving to DB)
+        List<String> certificationTitles = (request.certificationList() == null) ? new java.util.ArrayList<>() :
                 request.certificationList().stream()
+                        .filter(c -> c != null && c.certificationTitle() != null)
                         .map(ResumeCreateRequest.CertificationTag::certificationTitle)
                         .collect(Collectors.toList());
 
-        List<Resume.CareerData> careerList = request.careerList() == null ? new java.util.ArrayList<>() :
+        List<Resume.CareerData> careerList = (request.careerList() == null) ? new java.util.ArrayList<>() :
                 request.careerList().stream()
+                        .filter(c -> c != null)
                         .map(careerData -> new Resume.CareerData(
                                 careerData.careerStartDate(),
                                 careerData.careerEndDate(),
@@ -50,8 +52,9 @@ public class ResumeService {
                         ))
                         .collect(Collectors.toList());
 
-        List<String> personalityTags = request.personalityList() == null ? new java.util.ArrayList<>() :
+        List<String> personalityTags = (request.personalityList() == null) ? new java.util.ArrayList<>() :
                 request.personalityList().stream()
+                        .filter(p -> p != null && p.personality() != null)
                         .map(ResumeCreateRequest.PersonalityTag::personality)
                         .collect(Collectors.toList());
 

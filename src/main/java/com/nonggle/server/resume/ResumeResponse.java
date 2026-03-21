@@ -25,20 +25,21 @@ public record ResumeResponse(
     public static ResumeResponse from(Resume resume) {
         return new ResumeResponse(
                 resume.getId(),
-                resume.getUser().getId(),
+                resume.getUser() != null ? resume.getUser().getId() : null,
                 resume.getUserName(),
                 resume.getBirthDate(),
                 resume.getUserAge(),
                 resume.getGender(),
-                resume.getCertificationTitles(),
+                resume.getCertificationTitles() != null ? resume.getCertificationTitles() : new java.util.ArrayList<>(),
                 resume.getCareerList() != null ?
                         resume.getCareerList().stream()
+                                .filter(c -> c != null)
                                 .map(CareerResponseData::from)
-                                .collect(Collectors.toList()) : null,
+                                .collect(Collectors.toList()) : new java.util.ArrayList<>(),
                 resume.getTotalCareer(),
                 resume.getIntroduce(),
                 resume.getIntroduceDetail(),
-                resume.getPersonalityTags(),
+                resume.getPersonalityTags() != null ? resume.getPersonalityTags() : new java.util.ArrayList<>(),
                 resume.getProfileImageUrl(),
                 resume.getCreatedAt(),
                 resume.getUpdatedAt()

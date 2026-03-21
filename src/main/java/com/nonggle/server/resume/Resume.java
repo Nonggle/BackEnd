@@ -35,26 +35,26 @@ public class Resume {
     @ElementCollection
     @CollectionTable(name = "resume_certification_tags", joinColumns = @JoinColumn(name = "resume_id"))
     @Column(name = "certification_title")
-    private List<String> certificationTitles = new java.util.ArrayList<>(); // ResumeCreateRequest의 certificationList (간소화)
+    private List<String> certificationTitles = new java.util.ArrayList<>();
 
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "resume_career_data", joinColumns = @JoinColumn(name = "resume_id"))
-    private List<CareerData> careerList = new java.util.ArrayList<>(); // ResumeCreateRequest의 careerList
+    private List<CareerData> careerList = new java.util.ArrayList<>();
 
-    private String totalCareer; // ResumeCreateRequest의 totalCareer
+    private String totalCareer;
 
     @Column(length = 1000)
-    private String introduce; // ResumeCreateRequest의 introduce
+    private String introduce;
 
     @Column(length = 2000)
-    private String introduceDetail; // ResumeCreateRequest의 introduceDetail
+    private String introduceDetail;
 
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "resume_personality_tags", joinColumns = @JoinColumn(name = "resume_id"))
     @Column(name = "personality_tag")
-    private List<String> personalityTags = new java.util.ArrayList<>(); // ResumeCreateRequest의 personalityList (간소화)
+    private List<String> personalityTags = new java.util.ArrayList<>();
 
     private String profileImageUrl; // 프로필 사진 URL (nullable)
 
