@@ -42,10 +42,10 @@ public class GlobalExceptionHandler {
     // 예상치 못한 모든 예외 처리 (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception e) {
-        log.error("Unhandled exception: {}", e.getMessage(), e);
+        log.error("Unhandled exception: ", e); // 에러 로그에 스택 트레이스 포함
         ErrorDefine errorDefine = ErrorDefine.INTERNAL_ERROR;
         return ResponseEntity
                 .status(errorDefine.getHttpStatus())
-                .body(ApiResponse.fail(errorDefine.getCode(), errorDefine.getMessage()));
+                .body(ApiResponse.fail(errorDefine.getCode(), "서버 내부 오류가 발생했습니다. 로그를 확인해주세요. (" + e.getMessage() + ")"));
     }
 }

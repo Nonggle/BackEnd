@@ -31,16 +31,17 @@ public record ResumeResponse(
                 resume.getUserAge(),
                 resume.getGender(),
                 resume.getCertificationTitles(),
-                resume.getCareerList().stream()
-                        .map(CareerResponseData::from)
-                        .collect(Collectors.toList()),
+                resume.getCareerList() != null ?
+                        resume.getCareerList().stream()
+                                .map(CareerResponseData::from)
+                                .collect(Collectors.toList()) : null,
                 resume.getTotalCareer(),
                 resume.getIntroduce(),
                 resume.getIntroduceDetail(),
                 resume.getPersonalityTags(),
                 resume.getProfileImageUrl(),
-                resume.getCreatedAt() != null ? resume.getCreatedAt().toString() : null,
-                resume.getUpdatedAt() != null ? resume.getUpdatedAt().toString() : null
+                resume.getCreatedAt(),
+                resume.getUpdatedAt()
         );
     }
 

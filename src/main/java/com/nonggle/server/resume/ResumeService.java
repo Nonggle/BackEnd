@@ -23,6 +23,8 @@ public class ResumeService {
 
     @Transactional
     public Long createResume(Long userId, ResumeCreateRequest request, MultipartFile profileImage) {
+        System.out.println("DEBUG: Creating resume for user - ID: " + userId + ", Name: " + request.userName());
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.UNAUTHORIZED));
 
@@ -31,37 +33,45 @@ public class ResumeService {
             profileImageUrl = fileStorageService.storeFile(profileImage);
         }
 
+        // null-safe mapping for lists
+        List<String> certificationTitles = request.certificationList() == null ? new java.util.ArrayList<>() :
+                request.certificationList().stream()
+                        .map(ResumeCreateRequest.CertificationTag::certificationTitle)
+                        .collect(Collectors.toList());
+
+        List<Resume.CareerData> careerList = request.careerList() == null ? new java.util.ArrayList<>() :
+                request.careerList().stream()
+                        .map(careerData -> new Resume.CareerData(
+                                careerData.careerStartDate(),
+                                careerData.careerEndDate(),
+                                careerData.careerPeriod(),
+                                careerData.careerDescription(),
+                                careerData.careerDetail()
+                        ))
+                        .collect(Collectors.toList());
+
+        List<String> personalityTags = request.personalityList() == null ? new java.util.ArrayList<>() :
+                request.personalityList().stream()
+                        .map(ResumeCreateRequest.PersonalityTag::personality)
+                        .collect(Collectors.toList());
+
         Resume resume = Resume.builder()
                 .user(user)
                 .userName(request.userName())
                 .userAge(request.userAge())
                 .birthDate(request.birthDate())
                 .gender(request.gender())
-                .certificationTitles(request.certificationList() != null ?
-                        request.certificationList().stream()
-                                .map(ResumeCreateRequest.CertificationTag::certificationTitle)
-                                .collect(Collectors.toList()) : null)
-                .careerList(request.careerList() != null ?
-                        request.careerList().stream()
-                                .map(careerData -> new Resume.CareerData(
-                                        careerData.careerStartDate(),
-                                        careerData.careerEndDate(),
-                                        careerData.careerPeriod(),
-                                        careerData.careerDescription(),
-                                        careerData.careerDetail()
-                                ))
-                                .collect(Collectors.toList()) : null)
+                .certificationTitles(certificationTitles)
+                .careerList(careerList)
                 .totalCareer(request.totalCareer())
                 .introduce(request.introduce())
                 .introduceDetail(request.introduceDetail())
-                .personalityTags(request.personalityList() != null ?
-                        request.personalityList().stream()
-                                .map(ResumeCreateRequest.PersonalityTag::personality)
-                                .collect(Collectors.toList()) : null)
+                .personalityTags(personalityTags)
                 .profileImageUrl(profileImageUrl)
                 .build();
 
         resumeRepository.save(resume);
+        System.out.println("DEBUG: Resume saved successfully with ID: " + resume.getId());
         return resume.getId();
     }
 
